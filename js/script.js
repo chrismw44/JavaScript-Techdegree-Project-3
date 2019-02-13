@@ -1,5 +1,8 @@
-const $regexActivity = /^\s.+\s.\s([A-Za-z]+\s\d+[a,p][m].\d+[a,p][m]).\s\$\d+$/;
-const $regexDayTime = /[A-Za-z]+\s\d+[a,p][m].\d+[a,p][m]/;
+const regexActivity = /^\s.+\s.\s([A-Za-z]+\s\d+[a,p][m].\d+[a,p][m]).\s\$\d+$/;
+const regexDayTime = /[A-Za-z]+\s\d+[a,p][m].\d+[a,p][m]/;
+const regexActivityCost = /\d{3}/;
+let totalCost = 0;
+const $totalCostHTML = $('<p></p>');
 
 //Focus on name field on page load
 $('#name').focus();
@@ -9,6 +12,9 @@ $('#other-title').hide();
 
 //Hide tshirt color field on page load
 $('#colors-js-puns').hide();
+
+//Append $totalCostHTML element on page load
+$('.activities').append($totalCostHTML);
 
 //Show 'Your Job Role' field only if 'other' is selected in 'Job Role' field
 $('#title').on('click', function() {
@@ -35,32 +41,24 @@ $('#design').on('change', function() {
 });
 
 
-// $("input[type='checkbox']:not(:checked)").each(function(){
-//   const $checkText = $(this).parent().text();
-//   console.log($checkText);
-//   console.log($checkText.match($regexDayTime));
-// })
-
-
-
 //Disable activities that compete with those already checked
   //Listen for an activity to be checked
 $('.activities input').on('change', function(event) {
   const $selectedActivity = $(event.target);
   const $selectedText = $($selectedActivity).parent().text();
 
-  if ($regexActivity.test($selectedText)) {
-    const $selectedDayTime = ($selectedText.match($regexDayTime));
+  if (regexActivity.test($selectedText)) {
+    const selectedDayTime = $selectedText.match(regexDayTime);
 
     if ($selectedActivity.prop('checked')) {
 
       $("input[type='checkbox']:not(:checked)").each(function(){
         const $uncheckedActivity = $(this);
         const $uncheckedText = $($uncheckedActivity).parent().text();
-        if ($regexActivity.test($uncheckedText)) {
-          const $uncheckedDayTime = ($uncheckedText.match($regexDayTime));
-          if ($selectedDayTime[0] === $uncheckedDayTime[0]) {
-            $uncheckedActivity.prop('disabled', true);
+        if (regexActivity.test($uncheckedText)) {
+          const uncheckedDayTime = $uncheckedText.match(regexDayTime);
+          if (selectedDayTime[0] === uncheckedDayTime[0]) {
+            $uncheckedActivity.prop('disabled', true).parent().css({color: 'grey'});
           }
         }
      });
@@ -70,22 +68,24 @@ $('.activities input').on('change', function(event) {
        $("input[type='checkbox']:not(:checked)").each(function(){
          const $uncheckedActivity = $(this);
          const $uncheckedText = $($uncheckedActivity).parent().text();
-         if ($regexActivity.test($uncheckedText)) {
-           const $uncheckedDayTime = ($uncheckedText.match($regexDayTime));
-           if ($selectedDayTime[0] === $uncheckedDayTime[0]) {
-             $uncheckedActivity.prop('disabled', false);
+         if (regexActivity.test($uncheckedText)) {
+           const uncheckedDayTime = $uncheckedText.match(regexDayTime);
+           if (selectedDayTime[0] === uncheckedDayTime[0]) {
+             $uncheckedActivity.prop('disabled', false).parent().css({color: 'initial'});
            }
          }
       });
     }
   }
+  //Calculate total cost
+  totalCost = 0;
+  $($totalCostHTML).hide();
+  $("input[type='checkbox']:checked").each(function(){
+    const $activityText = $(this).parent().text();
+    const activityCostString = $activityText.match(regexActivityCost);
+    const activityCostInt = parseInt(activityCostString[0]);
+    totalCost = totalCost + activityCostInt;
+    $($totalCostHTML).text(`Total: \$${totalCost}`);
+    $($totalCostHTML).show();
+  });
 });
-
-
-
-//Re-enable activities when competing ones are unchecked
-  //Listen for an activity to be unchecked
-  //Find day and time of activity
-  //Loop through other activities and enable those which match
-
-//Running total of selected activities
