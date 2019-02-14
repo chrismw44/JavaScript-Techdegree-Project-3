@@ -16,6 +16,10 @@ $('#colors-js-puns').hide();
 //Append $totalCostHTML element on page load
 $('.activities').append($totalCostHTML);
 
+//Hide the Paypal and Bitcoin information on page load
+$('div #credit-card').next().hide();
+$('div #credit-card').next().next().hide();
+
 //Show 'Your Job Role' field only if 'other' is selected in 'Job Role' field
 $('#title').on('click', function() {
   if ($(this).val() === 'other') {
@@ -42,7 +46,6 @@ $('#design').on('change', function() {
 
 
 //Disable activities that compete with those already checked
-  //Listen for an activity to be checked
 $('.activities input').on('change', function(event) {
   const $selectedActivity = $(event.target);
   const $selectedText = $($selectedActivity).parent().text();
@@ -77,7 +80,8 @@ $('.activities input').on('change', function(event) {
       });
     }
   }
-  //Calculate total cost
+
+//Calculate total cost
   totalCost = 0;
   $($totalCostHTML).hide();
   $("input[type='checkbox']:checked").each(function(){
@@ -88,4 +92,22 @@ $('.activities input').on('change', function(event) {
     $($totalCostHTML).text(`Total: \$${totalCost}`);
     $($totalCostHTML).show();
   });
+});
+
+//Display payment sections based on selected payment option
+$('#payment').on('click', function(){
+  $('#payment option[value="select_method"]').remove();
+  if ($('#payment option[value="credit card"]').is(':selected')) {
+    $('div #credit-card').show();
+    $('div #credit-card').next().hide();
+    $('div #credit-card').next().next().hide();
+  } else if ($('#payment option[value="paypal"]').is(':selected')) {
+    $('div #credit-card').hide();
+    $('div #credit-card').next().show();
+    $('div #credit-card').next().next().hide();
+  } else if ($('#payment option[value="bitcoin"]').is(':selected')) {
+    $('div #credit-card').hide();
+    $('div #credit-card').next().hide();
+    $('div #credit-card').next().next().show();
+  }
 });
