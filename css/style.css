@@ -136,6 +136,11 @@ button:hover {
 	margin-top: 1.25em;
 }
 
+.error {
+  color: red;
+  border-color: red;
+}
+
 /* =================================
   Helper Classes
 ==================================== */

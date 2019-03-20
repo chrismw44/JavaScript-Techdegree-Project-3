@@ -1,8 +1,17 @@
 const regexActivity = /^\s.+\s.\s([A-Za-z]+\s\d+[a,p][m].\d+[a,p][m]).\s\$\d+$/;
 const regexDayTime = /[A-Za-z]+\s\d+[a,p][m].\d+[a,p][m]/;
 const regexActivityCost = /\d{3}/;
+const regexEmail = /^[^@]+@[^@.]+\.[a-z]{2}\.?[a-z]+$/i;
 let totalCost = 0;
 const $totalCostHTML = $('<p></p>');
+const $submit = $('button[type="submit"]');
+const $name = $('#name');
+const $email = $('#mail');
+const $activities = $('.activities');
+const $cardNumber = $('#cc-num');
+const $zipCode = $('#zip');
+const $cvv = $('#cvv');
+
 
 //Focus on name field on page load
 $('#name').focus();
@@ -15,6 +24,9 @@ $('#colors-js-puns').hide();
 
 //Append $totalCostHTML element on page load
 $('.activities').append($totalCostHTML);
+
+//Remove "select payment method" from payment option list on page load
+$('#payment option[value="select_method"]').remove();
 
 //Hide the Paypal and Bitcoin information on page load
 $('div #credit-card').next().hide();
@@ -96,7 +108,6 @@ $('.activities input').on('change', function(event) {
 
 //Display payment sections based on selected payment option
 $('#payment').on('click', function(){
-  $('#payment option[value="select_method"]').remove();
   if ($('#payment option[value="credit card"]').is(':selected')) {
     $('div #credit-card').show();
     $('div #credit-card').next().hide();
@@ -109,5 +120,62 @@ $('#payment').on('click', function(){
     $('div #credit-card').hide();
     $('div #credit-card').next().hide();
     $('div #credit-card').next().next().show();
+  }
+});
+
+//Validation
+//Name field is blank
+function nameValid(name) {
+  return /^\s*$/.test(name) === false;
+}
+
+//Valid email
+function emailValid(email) {
+  return /^[^@]+@[^@.]+\.[a-z]+$/i.test(email);
+}
+
+//At least one checkbox selected
+function $checkedValid(activities) {
+    return $("input[type='checkbox']:checked").length !== 0;
+}
+
+//Credit card field should be a number 13-16 digits long
+function cardNumberValid(cardNumber) {
+  return /^\d{13,16}$/.test(cardNumber);
+}
+
+//Zip code should be a 5 digit number
+function zipCodeValid(zip) {
+  return /^\d{5}$/.test(zip);
+}
+
+//CVV should be a 3 digit number
+function cvvValid(cvv) {
+  return /^\d{3}/.test(cvv);
+}
+
+function validate(validator, element) {
+  const valid = validator(element.val());
+  if (valid) {
+    $(element).removeClass('error');
+    $(element).prev('label').removeClass('error');
+  } else {
+    $(element).addClass('error');
+    $(element).prev('label').addClass('error');
+    event.preventDefault();
+  }
+}
+
+
+
+//Form validation
+$submit.on('click', function(event){
+  validate(nameValid, $name);
+  validate(emailValid, $email);
+  validate($checkedValid, $activities);
+  if ($('#payment option[value="credit card"]').is(':selected')) {
+    validate(cardNumberValid, $cardNumber);
+    validate(zipCodeValid, $zipCode);
+    validate(cvvValid, $cvv);
   }
 });
