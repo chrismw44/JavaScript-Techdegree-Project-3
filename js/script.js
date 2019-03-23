@@ -11,10 +11,22 @@ const $activities = $('.activities');
 const $cardNumber = $('#cc-num');
 const $zipCode = $('#zip');
 const $cvv = $('#cvv');
-
+//Validation messages
+const $nameErrorMsg = $('<span class="error-span">Name field cannot be blank</span>');
+const $emailErrorMsg1 = $('<span class="error-span">Must be valid email</span>');
+const $emailErrorMsg2 = $('<span class="error-span">Not a valid email</span>');
+const $checkboxErrorMsg = $('<span class="error-span">At least one activity must be selected</span>');
+const $cardNumberErrorMsg1 = $('<span class="error-span">Please enter a credit card number</span>');
+const $cardNumberErrorMsg2 = $('<span class="error-span">Card number must be between 13 and 16 digits long</span>');
+const $zipCodeErrorMsg = $('<span class="error-span">Zip code must be a 5 digit number</span>');
+const $cvvErrorMsg = $('<span class="error-span">CVV must be a 3 digit number</span>');
 
 //Focus on name field on page load
 $('#name').focus();
+
+//Add and hide realtime email validation message
+$($email).before($emailErrorMsg2);
+$($email).prev('span').hide();
 
 //Hide 'Your Job Role' field on page load
 $('#other-title').hide();
@@ -139,6 +151,11 @@ function $checkedValid(activities) {
     return $("input[type='checkbox']:checked").length !== 0;
 }
 
+//Card number is blank
+function cardNumberBlank(cardNumber) {
+  return /^\s*$/.test(cardNumber) === false;
+}
+
 //Credit card field should be a number 13-16 digits long
 function cardNumberValid(cardNumber) {
   return /^\d{13,16}$/.test(cardNumber);
@@ -154,14 +171,16 @@ function cvvValid(cvv) {
   return /^\d{3}/.test(cvv);
 }
 
-function validate(validator, element) {
+function validate(validator, element, message) {
   const valid = validator(element.val());
   if (valid) {
     $(element).removeClass('error');
     $(element).prev('label').removeClass('error');
+    $(element).next('span').remove();
   } else {
     $(element).addClass('error');
     $(element).prev('label').addClass('error');
+    $(element).after(message);
     event.preventDefault();
   }
 }
@@ -170,12 +189,28 @@ function validate(validator, element) {
 
 //Form validation
 $submit.on('click', function(event){
-  validate(nameValid, $name);
-  validate(emailValid, $email);
-  validate($checkedValid, $activities);
+  validate(nameValid, $name, $nameErrorMsg);
+  validate(emailValid, $email, $emailErrorMsg1);
+  validate($checkedValid, $activities, $checkboxErrorMsg);
   if ($('#payment option[value="credit card"]').is(':selected')) {
-    validate(cardNumberValid, $cardNumber);
-    validate(zipCodeValid, $zipCode);
-    validate(cvvValid, $cvv);
+    if ((cardNumberBlank($cardNumber.val())) === false) {
+      $($cardNumber).next('span').remove();
+      validate(cardNumberBlank, $cardNumber, $cardNumberErrorMsg1);
+    } else {
+      $($cardNumber).next('span').remove();
+      validate(cardNumberValid, $cardNumber, $cardNumberErrorMsg2);
+    }
+    validate(zipCodeValid, $zipCode, $zipCodeErrorMsg);
+    validate(cvvValid, $cvv, $cvvErrorMsg);
+  }
+});
+
+//Realtime validation of email field
+$email.on('input', function(){
+  const text = $(this).val();
+  if (emailValid(text) === false) {
+    $(this).prev('span').show();
+  } else {
+    $(this).prev('span').hide();
   }
 });
