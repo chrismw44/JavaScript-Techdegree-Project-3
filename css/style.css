@@ -38,7 +38,7 @@ a {
 
 form {
 	padding: .875em 1.875em 1.875em;
-	background: #85b5ca;
+	background: #fff;
 }
 
 fieldset,
@@ -114,6 +114,7 @@ button:hover {
 }
 
 
+
 /* =================================
   Page Styles
 ==================================== */
@@ -137,12 +138,31 @@ button:hover {
 }
 
 .error {
-  color: red;
   border-color: red;
+  margin-bottom: 2px;
 }
 
 .error-span {
   color: red;
+  display: block;
+  padding-top: 2px;
+  padding-bottom: 20px;
+  margin-top: 0;
+}
+
+.email-div {
+  position: relative;
+}
+
+.realtime-error {
+  text-align: right;
+  color: #fff;
+  background-color: #184f68;
+  border-radius: 5px;
+  position: absolute;
+  right: -22%;
+  top: 30%;
+  padding: 5px;
 }
 
 /* =================================

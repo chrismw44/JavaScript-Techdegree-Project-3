@@ -14,7 +14,7 @@ const $cvv = $('#cvv');
 //Validation messages
 const $nameErrorMsg = $('<span class="error-span">Name field cannot be blank</span>');
 const $emailErrorMsg1 = $('<span class="error-span">Must be valid email</span>');
-const $emailErrorMsg2 = $('<span class="error-span">Not a valid email</span>');
+const $emailErrorMsg2 = $('<span class="realtime-error">Not a valid email</span>');
 const $checkboxErrorMsg = $('<span class="error-span">At least one activity must be selected</span>');
 const $cardNumberErrorMsg1 = $('<span class="error-span">Please enter a credit card number</span>');
 const $cardNumberErrorMsg2 = $('<span class="error-span">Card number must be between 13 and 16 digits long</span>');
@@ -24,9 +24,15 @@ const $cvvErrorMsg = $('<span class="error-span">CVV must be a 3 digit number</s
 //Focus on name field on page load
 $('#name').focus();
 
+//Add class to email input and label elements and wrap them in a div
+$('label[for="mail"]').addClass('email');
+$($email).addClass('email');
+$('.email').wrapAll('<div class="email-div" />');
+
 //Add and hide realtime email validation message
 $($email).before($emailErrorMsg2);
 $($email).prev('span').hide();
+
 
 //Hide 'Your Job Role' field on page load
 $('#other-title').hide();
@@ -175,11 +181,9 @@ function validate(validator, element, message) {
   const valid = validator(element.val());
   if (valid) {
     $(element).removeClass('error');
-    $(element).prev('label').removeClass('error');
     $(element).next('span').remove();
   } else {
     $(element).addClass('error');
-    $(element).prev('label').addClass('error');
     $(element).after(message);
     event.preventDefault();
   }
@@ -208,7 +212,7 @@ $submit.on('click', function(event){
 //Realtime validation of email field
 $email.on('input', function(){
   const text = $(this).val();
-  if (emailValid(text) === false) {
+  if (emailValid(text) === false && /^\s*$/.test(text) === false) {
     $(this).prev('span').show();
   } else {
     $(this).prev('span').hide();
