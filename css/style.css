@@ -101,6 +101,7 @@ input[type="radio"] {
 	display: inline-block;
 }
 
+
 button {
 	color: #fff;
 	padding: .55em 1.25em;
@@ -160,10 +161,11 @@ button:hover {
   background-color: #184f68;
   border-radius: 5px;
   position: absolute;
-  right: -22%;
-  top: 30%;
+  right: 0;
+  top: -5%;
   padding: 5px;
 }
+
 
 /* =================================
   Helper Classes

@@ -24,10 +24,16 @@ const $cvvErrorMsg = $('<span class="error-span">CVV must be a 3 digit number</s
 //Focus on name field on page load
 $('#name').focus();
 
-//Add class to email input and label elements and wrap them in a div
+//Add class to email input and label elements and wrap them in a div for styling the realtime validation with css
 $('label[for="mail"]').addClass('email');
 $($email).addClass('email');
 $('.email').wrapAll('<div class="email-div" />');
+
+//Wrap the card number, zip and cvv in a div for styling when validation is applied
+$('.col').wrapAll('<div id="details" />');
+
+//Add clearfix class to credit-card div
+$('#details').addClass('clearfix');
 
 //Add and hide realtime email validation message
 $($email).before($emailErrorMsg2);
@@ -77,12 +83,15 @@ $('#design').on('change', function() {
 
 //Disable activities that compete with those already checked
 $('.activities input').on('change', function(event) {
+  //Find the text of the checked activity
   const $selectedActivity = $(event.target);
   const $selectedText = $($selectedActivity).parent().text();
 
+  //Find the date and time of the checked activity
   if (regexActivity.test($selectedText)) {
     const selectedDayTime = $selectedText.match(regexDayTime);
 
+    //Disable activities that clash
     if ($selectedActivity.prop('checked')) {
 
       $("input[type='checkbox']:not(:checked)").each(function(){
@@ -96,6 +105,7 @@ $('.activities input').on('change', function(event) {
         }
      });
    }
+    //Re-enable disabled checkboxes if activities no longer clash
      if (!$selectedActivity.prop('checked')) {
 
        $("input[type='checkbox']:not(:checked)").each(function(){
@@ -114,6 +124,8 @@ $('.activities input').on('change', function(event) {
 //Calculate total cost
   totalCost = 0;
   $($totalCostHTML).hide();
+
+  //Loop through each checked activity and add up the cost
   $("input[type='checkbox']:checked").each(function(){
     const $activityText = $(this).parent().text();
     const activityCostString = $activityText.match(regexActivityCost);
@@ -177,6 +189,7 @@ function cvvValid(cvv) {
   return /^\d{3}/.test(cvv);
 }
 
+//Function to add error classes and messages to invalid inputs
 function validate(validator, element, message) {
   const valid = validator(element.val());
   if (valid) {
@@ -191,7 +204,7 @@ function validate(validator, element, message) {
 
 
 
-//Form validation
+//Form validation runs the validate funtion for each required input
 $submit.on('click', function(event){
   validate(nameValid, $name, $nameErrorMsg);
   validate(emailValid, $email, $emailErrorMsg1);
